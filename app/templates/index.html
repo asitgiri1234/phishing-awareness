@@ -1,19 +1,203 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>PhishGuard Demo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishGuard | Phishing Detection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d1b2a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 48px 16px;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .page { width: 100%; max-width: 720px; }
+
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .brand-icon {
+      width: 40px; height: 40px;
+      background: #1d4ed8;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .brand-icon svg { width: 22px; height: 22px; }
+    .brand h1 { font-size: 22px; font-weight: 600; color: #f1f5f9; letter-spacing: -0.3px; }
+    .brand-badge {
+      font-size: 11px; font-weight: 500; color: #3b82f6;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.25);
+      padding: 2px 8px; border-radius: 20px; margin-left: 4px;
+    }
+    .subtitle { font-size: 13px; color: #64748b; margin-bottom: 28px; margin-left: 52px; }
+
+    .card {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 28px;
+    }
+    .card-label {
+      font-size: 11px; font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+    textarea {
+      width: 100%; height: 200px;
+      background: #0d1b2a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 14px;
+      color: #e2e8f0;
+      resize: vertical;
+      outline: none;
+      line-height: 1.6;
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: border-color 0.2s;
+    }
+    textarea::placeholder { color: #334155; }
+    textarea:focus { border-color: #3b82f6; }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .hint { font-size: 12px; color: #334155; }
+    .btn {
+      background: #1d4ed8;
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Inter', system-ui, sans-serif;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #2563eb; }
+    .btn svg { width: 15px; height: 15px; }
+
+    .divider { border: none; border-top: 1px solid #1e293b; margin: 22px 0; }
+
+    .result-safe {
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.2);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .result-phish {
+      background: rgba(239,68,68,0.06);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%; flex-shrink: 0;
+    }
+    .dot-safe { background: #10b981; }
+    .dot-phish { background: #ef4444; }
+    .result-label-safe { font-size: 15px; font-weight: 600; color: #10b981; }
+    .result-label-phish { font-size: 15px; font-weight: 600; color: #ef4444; }
+    .result-desc { font-size: 13px; color: #94a3b8; line-height: 1.6; margin-left: 18px; margin-top: 4px; }
+    .tags { display: flex; gap: 8px; margin-top: 14px; margin-left: 18px; flex-wrap: wrap; }
+    .tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+    .tag-safe { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
+    .tag-phish { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+
+    .footer { margin-top: 24px; text-align: center; font-size: 12px; color: #1e293b; }
+  </style>
 </head>
 <body>
-    <h2>PhishGuard – Basic Detection Demo</h2>
+
+<div class="page">
+
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <h1>PhishGuard <span class="brand-badge">NLP v1.0</span></h1>
+  </div>
+  <p class="subtitle">Real-time phishing detection using machine learning</p>
+
+  <div class="card">
+    <p class="card-label">Email content</p>
 
     <form method="POST">
-        <textarea name="message" rows="5" cols="60" placeholder="Enter email or message"></textarea>
-        <br><br>
-        <button type="submit">Check</button>
+      <textarea
+        name="email_text"
+        placeholder="Paste the email content here for phishing analysis..."
+        required>{{ request.form.get('email_text', '') }}</textarea>
+
+      <div class="actions">
+        <span class="hint">Supports email body, headers, or raw text</span>
+        <button type="submit" class="btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          Analyze Email
+        </button>
+      </div>
     </form>
 
-    {% if result %}
-        <h3>Prediction: {{ result }}</h3>
+    {% if prediction %}
+    <hr class="divider">
+
+    {% if prediction == "Phishing Email" %}
+    <div class="result-phish">
+      <div class="result-header">
+        <div class="dot dot-phish"></div>
+        <span class="result-label-phish">Phishing Email Detected</span>
+      </div>
+      <p class="result-desc">This email shows characteristics commonly associated with phishing attempts. Do not click any links or share personal information.</p>
+      <div class="tags">
+        <span class="tag tag-phish">High risk</span>
+        <span class="tag tag-phish">Potential threat</span>
+        <span class="tag tag-phish">Do not engage</span>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="result-safe">
+      <div class="result-header">
+        <div class="dot dot-safe"></div>
+        <span class="result-label-safe">Legitimate Email</span>
+      </div>
+      <p class="result-desc">This email appears to be legitimate and safe. No phishing indicators were detected in the content.</p>
+      <div class="tags">
+        <span class="tag tag-safe">No suspicious links</span>
+        <span class="tag tag-safe">Trusted tone</span>
+        <span class="tag tag-safe">Low risk</span>
+      </div>
+    </div>
     {% endif %}
+
+    {% endif %}
+  </div>
+
+  <div class="footer">Final Year Project — BSc Computer Science</div>
+</div>
+
 </body>
 </html>
